@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minha Rotina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: coluna única de 640px; data e progresso no topo, abas e listas abaixo. */
+:root {
+  --bg: #f1f4f2;
+  --surface: #ffffff;
+  --ink: #15201c;
+  --muted: #5b6a64;
+  --line: #dbe3df;
+  --accent: #1d6b58;
+  --accent-ink: #ffffff;
+  --warn: #a15c00;
+  --warn-bg: #fdf0d9;
+  --crit: #b3261e;
+  --crit-bg: #fbe4e1;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1513;
+    --surface: #161f1c;
+    --ink: #e5ece8;
+    --muted: #93a39c;
+    --line: #26332e;
+    --accent: #5fcfae;
+    --accent-ink: #08201a;
+    --warn: #f0b45a;
+    --warn-bg: #2e2412;
+    --crit: #ff8f86;
+    --crit-bg: #341a18;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1513;
+  --surface: #161f1c;
+  --ink: #e5ece8;
+  --muted: #93a39c;
+  --line: #26332e;
+  --accent: #5fcfae;
+  --accent-ink: #08201a;
+  --warn: #f0b45a;
+  --warn-bg: #2e2412;
+  --crit: #ff8f86;
+  --crit-bg: #341a18;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  min-height: 100%;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+.wrap { max-width: 640px; margin: 0 auto; padding: 24px 16px 64px; display: flex; flex-direction: column; gap: 20px; }
+
+header { display: flex; flex-direction: column; gap: 10px; }
+.eyebrow { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+h1 {
+  margin: 0; font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(28px, 7vw, 38px); line-height: 1.1; text-wrap: balance; text-transform: capitalize;
+}
+.progress { display: flex; align-items: center; gap: 12px; }
+.bar { flex: 1; height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .25s ease; }
+.progress span { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.aviso { background: var(--warn-bg); color: var(--warn); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tabs button {
+  background: none; border: 0; padding: 10px 14px; font-weight: 600; color: var(--muted);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.add { display: flex; flex-direction: column; gap: 10px; }
+.add .line { display: flex; gap: 8px; flex-wrap: wrap; }
+input[type="text"], input[type="date"], input[type="number"], select, textarea {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0;
+}
+input[type="text"] { flex: 1 1 200px; }
+textarea { width: 100%; resize: vertical; min-height: 84px; }
+.btn {
+  background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 10px; padding: 10px 16px; font-weight: 600;
+}
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn.on { background: var(--warn-bg); color: var(--warn); border-color: transparent; }
+.btn.small { padding: 6px 10px; font-size: 14px; }
+
+section.group { display: flex; flex-direction: column; gap: 8px; }
+.group > h2 {
+  margin: 0; font-family: var(--font-display); font-size: 15px; font-weight: 600; letter-spacing: .02em; color: var(--muted);
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.group > h2.late { color: var(--crit); }
+.group > h2 small { font-family: var(--font-body); font-size: 13px; font-variant-numeric: tabular-nums; }
+.list { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.sub { padding: 8px 14px 6px; font-size: 13px; font-weight: 600; color: var(--accent); background: var(--bg); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+.row { display: flex; align-items: center; gap: 8px; padding: 4px 6px 4px 14px; border-bottom: 1px solid var(--line); min-height: 48px; }
+.row:last-child { border-bottom: 0; }
+.task { flex: 1; display: flex; align-items: center; gap: 12px; padding: 8px 0; cursor: pointer; min-width: 0; }
+.txt { overflow-wrap: anywhere; }
+.row.done .txt { color: var(--muted); text-decoration: line-through; }
+input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none; flex: none; width: 22px; height: 22px; margin: 0;
+  border: 2px solid var(--muted); border-radius: 7px; background: transparent; cursor: pointer;
+}
+input[type="checkbox"]:checked {
+  background-color: var(--accent); border-color: var(--accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+  background-size: 100%; background-repeat: no-repeat;
+}
+.tag { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; white-space: nowrap; background: var(--bg); color: var(--muted); }
+.tag.hot { background: var(--warn-bg); color: var(--warn); }
+.tag.late { background: var(--crit-bg); color: var(--crit); }
+.x { background: none; border: 0; width: 36px; height: 36px; border-radius: 8px; color: var(--muted); font-size: 20px; line-height: 1; flex: none; }
+.x:hover { color: var(--crit); background: var(--crit-bg); }
+.x.armed { width: auto; padding: 0 10px; font-size: 13px; font-weight: 600; color: var(--crit); background: var(--crit-bg); }
+
+.empty { padding: 22px 16px; text-align: center; color: var(--muted); }
+
+.rot { padding: 14px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+.rot:last-child { border-bottom: 0; }
+.rot .top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.rot strong { font-family: var(--font-display); font-size: 17px; }
+.rot ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 15px; }
+.freq { font-size: 13px; color: var(--accent); font-weight: 600; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-grid .full { grid-column: 1 / -1; }
+label.f { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: var(--muted); }
+label.f input, label.f select { width: 100%; }
+@media (max-width: 420px) { .form-grid { grid-template-columns: 1fr; } }
+
+.dia { font-variant-numeric: tabular-nums; }
+.kpis { display: flex; gap: 10px; }
+.kpi { flex: 1; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.kpi b { display: block; font-family: var(--font-display); font-size: 28px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi span { font-size: 13px; color: var(--muted); }
+
+details.backup { font-size: 14px; color: var(--muted); }
+details.backup summary { cursor: pointer; font-weight: 600; }
+details.backup .inner { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; }
+details.backup .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+#bkMsg { min-height: 1.2em; }
+
+[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Minha rotina</div>
+    <h1 id="dataHoje">Hoje</h1>
+    <div class="progress">
+      <div class="bar" role="progressbar" aria-label="Progresso do dia" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="barra"><i id="barraFill"></i></div>
+      <span id="progTxt">0 de 0</span>
+    </div>
+  </header>
+
+  <div class="aviso" id="aviso" hidden>Este navegador não está salvando os dados. Suas tarefas somem ao fechar a página. Use o backup no fim da página para guardar uma cópia.</div>
+
+  <nav class="tabs" role="tablist" aria-label="Seções">
+    <button role="tab" id="tab-hoje" data-tab="hoje" aria-selected="true">Hoje</button>
+    <button role="tab" id="tab-rotinas" data-tab="rotinas" aria-selected="false">Rotinas</button>
+    <button role="tab" id="tab-historico" data-tab="historico" aria-selected="false">Histórico</button>
+  </nav>
+
+  <main>
+    <!-- HOJE -->
+    <div id="painel-hoje" style="display:flex;flex-direction:column;gap:20px">
+      <form class="card add" id="formTarefa" autocomplete="off">
+        <div class="line">
+          <input type="text" id="tText" placeholder="O que precisa ser feito?" aria-label="Nova tarefa" maxlength="200" required>
+          <button class="btn" type="submit">Adicionar</button>
+        </div>
+        <div class="line">
+          <input type="date" id="tDue" aria-label="Data da tarefa">
+          <button class="btn ghost small" type="button" id="tPrio" aria-pressed="false">Marcar como importante</button>
+        </div>
+      </form>
+      <div id="listaHoje" style="display:flex;flex-direction:column;gap:20px"></div>
+    </div>
+
+    <!-- ROTINAS -->
+    <div id="painel-rotinas" hidden style="display:flex;flex-direction:column;gap:20px">
+      <p style="margin:0;color:var(--muted)">Uma rotina cria sozinha as tarefas dela nos dias certos. Você só marca o que foi feito.</p>
+      <div id="listaRotinas" class="list"></div>
+      <form class="card" id="formRotina" autocomplete="off">
+        <div class="form-grid">
+          <label class="f full">Nome da rotina
+            <input type="text" id="rNome" maxlength="80" placeholder="Ex.: Fechamento do dia" required>
+          </label>
+          <label class="f">Repetir
+            <select id="rFreq">
+              <option value="daily">Todo dia</option>
+              <option value="weekdays" selected>Dias úteis (seg a sex)</option>
+              <option value="weekly">Toda semana</option>
+              <option value="monthly">Todo mês</option>
+            </select>
+          </label>
+          <label class="f" id="boxSemana" hidden>Dia da semana
+            <select id="rSemana">
+              <option value="1">Segunda</option><option value="2">Terça</option><option value="3">Quarta</option>
+              <option value="4">Quinta</option><option value="5">Sexta</option><option value="6">Sábado</option><option value="0">Domingo</option>
+            </select>
+          </label>
+          <label class="f" id="boxMes" hidden>Dia do mês
+            <input type="number" id="rMes" min="1" max="31" value="1">
+          </label>
+          <label class="f full">Passos (um por linha)
+            <textarea id="rItens" placeholder="Conferir e-mails&#10;Revisar pendências&#10;Registrar o que ficou para amanhã" required></textarea>
+          </label>
+          <div class="full"><button class="btn" type="submit">Criar rotina</button></div>
+        </div>
+      </form>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div id="painel-historico" hidden style="display:flex;flex-direction:column;gap:20px">
+      <div class="kpis" id="kpis"></div>
+      <div id="listaHistorico" style="display:flex;flex-direction:column;gap:20px"></div>
+    </div>
+  </main>
+
+  <details class="backup">
+    <summary>Backup dos dados</summary>
+    <div class="inner">
+      <span>Os dados ficam só neste navegador. Copie o backup para guardar ou levar para outro aparelho.</span>
+      <textarea id="bkTxt" aria-label="Texto do backup" placeholder="Cole aqui um backup para restaurar"></textarea>
+      <div class="btns">
+        <button class="btn ghost small" type="button" id="bkCopiar">Copiar backup</button>
+        <button class="btn ghost small" type="button" id="bkRestaurar">Restaurar do texto</button>
+      </div>
+      <span id="bkMsg" role="status"></span>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  var KEY = 'minha-rotina-v1';
+  var DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+  var state;
+  var tab = 'hoje';
+  var armed = null;
+  var armTimer = null;
+  var newPrio = false;
+
+  function $(s) { return document.querySelector(s); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function uid() { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36); }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function today() { return ymd(new Date()); }
+  function parse(s) { var p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+  function fmtLong(s) { return parse(s).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }); }
+  function fmtShort(s) { return parse(s).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' }).replace('.', ''); }
+
+  /* ---------- armazenamento ---------- */
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var s = JSON.parse(raw);
+        if (s && Array.isArray(s.tasks) && Array.isArray(s.routines)) { if (!s.generated) s.generated = {}; return s; }
+      }
+    } catch (e) { $('#aviso').hidden = false; }
+    return null;
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); }
+    catch (e) { $('#aviso').hidden = false; }
+  }
+  function seed() {
+    var t = today();
+    return {
+      tasks: [
+        { id: uid(), text: 'Exemplo: apague esta tarefa e adicione as suas', due: t, prio: false, done: false, doneAt: null }
+      ],
+      routines: [
+        { id: uid(), name: 'Início do dia', freq: 'weekdays', day: 1, items: ['Conferir e-mails e mensagens', 'Definir as 3 prioridades do dia', 'Ver o que ficou pendente de ontem'] },
+        { id: uid(), name: 'Fechamento da semana', freq: 'weekly', day: 5, items: ['Registrar o que foi concluído', 'Listar pendências para a próxima semana'] }
+      ],
+      generated: {}
+    };
+  }
+
+  /* ---------- rotinas ---------- */
+  function isDue(r, date) {
+    var dow = date.getDay(), dom = date.getDate();
+    var last = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+    if (r.freq === 'daily') return true;
+    if (r.freq === 'weekdays') return dow >= 1 && dow <= 5;
+    if (r.freq === 'weekly') return dow === Number(r.day);
+    if (r.freq === 'monthly') return dom === Math.min(Number(r.day), last);
+    return false;
+  }
+  function freqLabel(r) {
+    if (r.freq === 'daily') return 'Todo dia';
+    if (r.freq === 'weekdays') return 'Dias úteis';
+    if (r.freq === 'weekly') return 'Toda ' + DIAS[Number(r.day)];
+    if (r.freq === 'monthly') return 'Todo dia ' + r.day + ' do mês';
+    return '';
+  }
+  function generate() {
+    var now = new Date(), t = ymd(now), changed = false;
+    state.routines.forEach(function (r) {
+      var key = r.id + '|' + t;
+      if (isDue(r, now) && !state.generated[key]) {
+        r.items.forEach(function (item) {
+          state.tasks.push({ id: uid(), text: item, due: t, prio: false, done: false, doneAt: null, routineId: r.id, routineName: r.name });
+        });
+        state.generated[key] = true;
+        changed = true;
+      }
+    });
+    if (changed) save();
+  }
+
+  /* ---------- renderização ---------- */
+  function rowHtml(t, t0) {
+    var tags = '';
+    if (t.prio) tags += '<span class="tag hot">importante</span>';
+    if (!t.done && t.due < t0) tags += '<span class="tag late">venceu ' + esc(fmtShort(t.due)) + '</span>';
+    else if (t.due > t0) tags += '<span class="tag">' + esc(fmtShort(t.due)) + '</span>';
+    return '<div class="row' + (t.done ? ' done' : '') + '">' +
+      '<label class="task"><input type="checkbox" data-act="toggle" data-id="' + t.id + '"' + (t.done ? ' checked' : '') + '>' +
+      '<span class="txt">' + esc(t.text) + '</span></label>' + tags +
+      '<button class="x" type="button" data-act="del" data-id="' + t.id + '" aria-label="Apagar tarefa">&times;</button></div>';
+  }
+  function sortTasks(a, b) {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    if (a.prio !== b.prio) return a.prio ? -1 : 1;
+    return a.due < b.due ? -1 : a.due > b.due ? 1 : 0;
+  }
+  function renderGroup(title, tasks, t0, cls) {
+    if (!tasks.length) return '';
+    var loose = tasks.filter(function (t) { return !t.routineId; }).sort(sortTasks);
+    var byRoutine = {};
+    var order = [];
+    tasks.filter(function (t) { return t.routineId; }).forEach(function (t) {
+      if (!byRoutine[t.routineId]) { byRoutine[t.routineId] = []; order.push(t.routineId); }
+      byRoutine[t.routineId].push(t);
+    });
+    var open = tasks.filter(function (t) { return !t.done; }).length;
+    var html = '<section class="group"><h2 class="' + (cls || '') + '">' + esc(title) + '<small>' + open + ' em aberto</small></h2><div class="list">';
+    order.forEach(function (id) {
+      var items = byRoutine[id];
+      var done = items.filter(function (t) { return t.done; }).length;
+      html += '<div class="sub"><span>' + esc(items[0].routineName || 'Rotina') + '</span><span>' + done + '/' + items.length + '</span></div>';
+      items.forEach(function (t) { html += rowHtml(t, t0); });
+    });
+    if (order.length && loose.length) html += '<div class="sub"><span>Avulsas</span><span></span></div>';
+    loose.forEach(function (t) { html += rowHtml(t, t0); });
+    return html + '</div></section>';
+  }
+  function renderHoje() {
+    var t0 = today();
+    var late = state.tasks.filter(function (t) { return !t.done && t.due < t0; });
+    var now = state.tasks.filter(function (t) {
+      return (!t.done && t.due === t0) || (t.done && t.doneAt === t0);
+    });
+    var later = state.tasks.filter(function (t) { return !t.done && t.due > t0; })
+      .sort(function (a, b) { return a.due < b.due ? -1 : 1; });
+
+    var total = late.length + now.length;
+    var done = now.filter(function (t) { return t.done; }).length;
+    var pct = total ? Math.round(done / total * 100) : 0;
+    $('#barraFill').style.width = pct + '%';
+    $('#barra').setAttribute('aria-valuenow', pct);
+    $('#progTxt').textContent = done + ' de ' + total + ' feitas';
+
+    var html = renderGroup('Atrasadas', late, t0, 'late') + renderGroup('Hoje', now, t0) + renderGroup('Depois', later, t0);
+    if (!html) html = '<div class="list"><div class="empty">Nada pendente. Adicione uma tarefa acima ou crie uma rotina.</div></div>';
+    $('#listaHoje').innerHTML = html;
+  }
+  function renderRotinas() {
+    var html = '';
+    state.routines.forEach(function (r) {
+      var isArmed = armed === r.id;
+      html += '<div class="rot"><div class="top"><strong>' + esc(r.name) + '</strong>' +
+        '<button class="x' + (isArmed ? ' armed' : '') + '" type="button" data-act="delrot" data-id="' + r.id + '" aria-label="Apagar rotina">' + (isArmed ? 'Confirmar?' : '&times;') + '</button></div>' +
+        '<span class="freq">' + esc(freqLabel(r)) + '</span><ul>' +
+        r.items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></div>';
+    });
+    $('#listaRotinas').innerHTML = html || '<div class="empty">Nenhuma rotina ainda. Crie a primeira abaixo.</div>';
+  }
+  function renderHistorico() {
+    var done = state.tasks.filter(function (t) { return t.done && t.doneAt; });
+    var days = {};
+    done.forEach(function (t) { (days[t.doneAt] = days[t.doneAt] || []).push(t); });
+    var keys = Object.keys(days).sort().reverse().slice(0, 30);
+
+    var now = new Date(), week = 0;
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      week += (days[ymd(d)] || []).length;
+    }
+    var t0 = today();
+    $('#kpis').innerHTML =
+      '<div class="kpi"><b>' + (days[t0] || []).length + '</b><span>feitas hoje</span></div>' +
+      '<div class="kpi"><b>' + week + '</b><span>feitas nos últimos 7 dias</span></div>' +
+      '<div class="kpi"><b>' + done.length + '</b><span>no total</span></div>';
+
+    var html = '';
+    keys.forEach(function (k) {
+      var items = days[k];
+      html += '<section class="group"><h2>' + esc(fmtLong(k)) + '<small>' + items.length + ' feitas</small></h2><div class="list">';
+      items.forEach(function (t) {
+        html += '<div class="row done"><label class="task"><input type="checkbox" data-act="toggle" data-id="' + t.id + '" checked>' +
+          '<span class="txt">' + esc(t.text) + '</span></label>' +
+          (t.routineName ? '<span class="tag">' + esc(t.routineName) + '</span>' : '') + '</div>';
+      });
+      html += '</div></section>';
+    });
+    $('#listaHistorico').innerHTML = html || '<div class="list"><div class="empty">O que você concluir aparece aqui, dia por dia.</div></div>';
+  }
+  function render() {
+    $('#dataHoje').textContent = fmtLong(today());
+    ['hoje', 'rotinas', 'historico'].forEach(function (n) {
+      $('#painel-' + n).hidden = n !== tab;
+      $('#tab-' + n).setAttribute('aria-selected', n === tab ? 'true' : 'false');
+    });
+    renderHoje();
+    if (tab === 'rotinas') renderRotinas();
+    if (tab === 'historico') renderHistorico();
+  }
+
+  /* ---------- ações ---------- */
+  document.addEventListener('click', function (e) {
+    var tabBtn = e.target.closest('[data-tab]');
+    if (tabBtn) { tab = tabBtn.getAttribute('data-tab'); armed = null; render(); return; }
+
+    var el = e.target.closest('[data-act]');
+    if (!el) return;
+    var act = el.getAttribute('data-act'), id = el.getAttribute('data-id');
+
+    if (act === 'toggle') {
+      var t = state.tasks.find(function (x) { return x.id === id; });
+      if (t) { t.done = !t.done; t.doneAt = t.done ? today() : null; save(); render(); }
+    } else if (act === 'del') {
+      state.tasks = state.tasks.filter(function (x) { return x.id !== id; });
+      save(); render();
+    } else if (act === 'delrot') {
+      if (armed === id) {
+        state.routines = state.routines.filter(function (r) { return r.id !== id; });
+        armed = null; clearTimeout(armTimer); save(); render();
+      } else {
+        armed = id; renderRotinas();
+        clearTimeout(armTimer);
+        armTimer = setTimeout(function () { armed = null; if (tab === 'rotinas') renderRotinas(); }, 3000);
+      }
+    }
+  });
+
+  $('#tPrio').addEventListener('click', function () {
+    newPrio = !newPrio;
+    this.classList.toggle('on', newPrio);
+    this.setAttribute('aria-pressed', String(newPrio));
+    this.textContent = newPrio ? 'Importante' : 'Marcar como importante';
+  });
+
+  $('#formTarefa').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var txt = $('#tText').value.trim();
+    if (!txt) return;
+    state.tasks.push({ id: uid(), text: txt, due: $('#tDue').value || today(), prio: newPrio, done: false, doneAt: null });
+    save();
+    $('#tText').value = '';
+    $('#tDue').value = today();
+    if (newPrio) $('#tPrio').click();
+    render();
+    $('#tText').focus();
+  });
+
+  function syncFreq() {
+    var f = $('#rFreq').value;
+    $('#boxSemana').hidden = f !== 'weekly';
+    $('#boxMes').hidden = f !== 'monthly';
+  }
+  $('#rFreq').addEventListener('change', syncFreq);
+
+  $('#formRotina').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = $('#rNome').value.trim();
+    var items = $('#rItens').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+    if (!name || !items.length) return;
+    var f = $('#rFreq').value;
+    var day = f === 'weekly' ? Number($('#rSemana').value) : f === 'monthly' ? Math.max(1, Math.min(31, Number($('#rMes').value) || 1)) : 1;
+    state.routines.push({ id: uid(), name: name, freq: f, day: day, items: items });
+    generate();
+    save();
+    $('#rNome').value = '';
+    $('#rItens').value = '';
+    render();
+  });
+
+  /* ---------- backup ---------- */
+  $('#bkCopiar').addEventListener('click', function () {
+    var txt = JSON.stringify(state);
+    var box = $('#bkTxt');
+    box.value = txt;
+    function manual() { box.focus(); box.select(); $('#bkMsg').textContent = 'Selecionei o texto na caixa. Copie com Ctrl+C (ou segure e copie no celular).'; }
+    try {
+      navigator.clipboard.writeText(txt).then(function () { $('#bkMsg').textContent = 'Backup copiado.'; }, manual);
+    } catch (err) { manual(); }
+  });
+  $('#bkRestaurar').addEventListener('click', function () {
+    try {
+      var s = JSON.parse($('#bkTxt').value);
+      if (!s || !Array.isArray(s.tasks) || !Array.isArray(s.routines)) throw new Error('formato');
+      if (!s.generated) s.generated = {};
+      state = s; save(); generate(); render();
+      $('#bkMsg').textContent = 'Backup restaurado.';
+    } catch (err) {
+      $('#bkMsg').textContent = 'Não consegui ler esse texto. Cole o backup completo, do primeiro ao último caractere.';
+    }
+  });
+
+  /* ---------- início ---------- */
+  state = load() || seed();
+  $('#tDue').value = today();
+  syncFreq();
+  generate();
+  save();
+  render();
+
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) { $('#tDue').value = $('#tDue').value || today(); generate(); render(); }
+  });
+})();
+</script>
+</body>
+</html>
